@@ -1,12 +1,14 @@
+#include <assert.h>
 #include <stdio.h>
 #include <omp.h>
 
 #define ITERS 1000
 #define RECUR 4 
 #define rdtscll(val) __asm__ __volatile__("rdtsc" : "=A" (val))
-#define NUM_CPU 1
 
 typedef unsigned long long cycles_t;
+
+#undef PRINT_VALS
 
 void
 test_parallel(void)
@@ -24,12 +26,17 @@ test_parallel(void)
 		}
 		rdtscll(en);
 
+		assert(en >= st);
 		diff = en - st;
 		total += diff;
 		if (diff > max) max = diff;
+
+#ifdef PRINT_VALS
+		printf("%llu\n", diff);
+#endif
 	}
 
-	printf("uBench Parallel (NCORES:%u, NITERS=%d): AVG:%llu WC:%llu\n", NUM_CPU, ITERS, total / ITERS, max);
+	printf("uBench Parallel (ITERS=%d): AVG:%llu WC:%llu\n", ITERS, total / ITERS, max);
 }
 
 void
@@ -51,12 +58,17 @@ test_parallel_critical(void)
 		}
 		rdtscll(en);
 
+		assert(en >= st);
 		diff = en - st;
 		total += diff;
 		if (diff > max) max = diff;
+#ifdef PRINT_VALS
+		printf("%llu\n", diff);
+#endif
+
 	}
 
-	printf("uBench Parallel+Critical (NCORES:%u, NITERS=%d): AVG:%llu WC:%llu\n", NUM_CPU, ITERS, total / ITERS, max);
+	printf("uBench Parallel+Critical (ITERS=%d): AVG:%llu WC:%llu\n", ITERS, total / ITERS, max);
 }
 
 void
@@ -80,12 +92,17 @@ test_parallel_task(void)
 		}
 		rdtscll(en);
 
+		assert(en >= st);
 		diff = en - st;
 		total += diff;
 		if (diff > max) max = diff;
+#ifdef PRINT_VALS
+		printf("%llu\n", diff);
+#endif
+
 	}
 
-	printf("uBench Parallel+Task+Taskwait (NCORES:%u, NITERS=%d): AVG:%llu WC:%llu\n", NUM_CPU, ITERS, total / ITERS, max);
+	printf("uBench Parallel+Task+Taskwait (ITERS=%d): AVG:%llu WC:%llu\n", ITERS, total / ITERS, max);
 }
 
 void
@@ -124,12 +141,17 @@ test_parallel_task_4levels(void)
 		}
 		rdtscll(en);
 
+		assert(en >= st);
 		diff = en - st;
 		total += diff;
 		if (diff > max) max = diff;
+#ifdef PRINT_VALS
+		printf("%llu\n", diff);
+#endif
+
 	}
 
-	printf("uBench Parallel+Task 4levels+Taskwait (NCORES:%u, NITERS=%d): AVG:%llu WC:%llu\n", NUM_CPU, ITERS, total / ITERS, max);
+	printf("uBench Parallel+Task 4levels+Taskwait (ITERS=%d): AVG:%llu WC:%llu\n", ITERS, total / ITERS, max);
 }
 
 int
